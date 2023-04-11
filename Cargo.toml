@@ -1,0 +1,15 @@
+[package]
+name = "pgpkeydump"
+description = "A tool for dumping PGP keys as JSON"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4.2", features = ["derive"] }
+env_logger = "0.10"
+hex = { version = "0.4.3", features = ["serde"] }
+log = "0.4"
+sequoia-openpgp = "1.14.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
