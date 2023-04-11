@@ -1,5 +1,5 @@
 #![forbid(unsafe_code)]
-#![forbid(clippy::unwrap_used, clippy::panic)]
+#![deny(clippy::unwrap_used, clippy::panic)]
 
 use std::{fs::File, io, path::PathBuf};
 
