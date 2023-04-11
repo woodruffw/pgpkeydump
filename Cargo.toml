@@ -5,6 +5,11 @@ license = "Apache-2.0"
 version = "0.1.2"
 edition = "2021"
 
+[package.metadata.release]
+dev-version = false
+publish = false
+push = true
+
 [dependencies]
 anyhow = "1"
 clap = { version = "4.2", features = ["derive"] }
