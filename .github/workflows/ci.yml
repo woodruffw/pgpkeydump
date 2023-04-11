@@ -9,11 +9,16 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
 
       - name: Format
         run: cargo fmt --check
+
+      - name: Deps
+        run: |
+          sudo apt install -y nettle-dev
 
       - name: Lint
         run: |
@@ -26,11 +31,16 @@ jobs:
       matrix:
         platform: ["ubuntu-latest"]
     runs-on: ${{ matrix.platform }}
+
     steps:
     - uses: actions/checkout@v3
 
     - name: Build
       run: cargo build
+
+    - name: Deps
+      run: |
+        sudo apt install -y nettle-dev
 
     - name: Doc
       run: cargo doc
