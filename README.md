@@ -125,8 +125,3 @@ If this tool doesn't do what you want, then the closest alternatives are:
   kinds of reasonable inputs);
 * [`sq packet dump`](https://docs.sequoia-pgp.org/sq/), which is maintained
   but only provides a textual output.
-
-## License
-
-This code is intentionally not licensed, to prevent upstreaming or reuse in
-other projects.
