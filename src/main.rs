@@ -1,8 +1,7 @@
-use std::{
-    fs::File,
-    io::{self},
-    path::PathBuf,
-};
+#![forbid(unsafe_code)]
+#![forbid(clippy::unwrap_used, clippy::panic)]
+
+use std::{fs::File, io, path::PathBuf};
 
 use anyhow::{Context, Result};
 use clap::Parser;
