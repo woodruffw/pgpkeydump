@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Format
+        run: cargo fmt --check
+
+      - name: Lint
+        run: |
+          rustup update
+          rustup component add clippy
+          cargo clippy
+
+  build:
+    strategy:
+      matrix:
+        platform: ["ubuntu-latest"]
+    runs-on: ${{ matrix.platform }}
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: cargo build
+
+    - name: Doc
+      run: cargo doc
