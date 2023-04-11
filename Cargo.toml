@@ -1,6 +1,7 @@
 [package]
 name = "pgpkeydump"
 description = "A tool for dumping PGP keys as JSON"
+license = "NONE"
 version = "0.1.0"
 edition = "2021"
 
