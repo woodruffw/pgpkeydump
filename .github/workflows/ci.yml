@@ -35,12 +35,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Build
-      run: cargo build
-
     - name: Deps
       run: |
         sudo apt install -y nettle-dev
+
+    - name: Build
+      run: cargo build
 
     - name: Doc
       run: cargo doc
