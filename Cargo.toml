@@ -1,6 +1,7 @@
 [package]
 name = "pgpkeydump"
 description = "A tool for dumping PGP keys as JSON"
+license = "Apache-2.0"
 license-file = "LICENSE"
 version = "0.1.1"
 edition = "2021"
