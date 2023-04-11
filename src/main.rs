@@ -43,6 +43,7 @@ impl From<&MPI> for DumpableMPI {
     }
 }
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Serialize)]
 #[serde(tag = "algorithm")]
 enum DumpableKeyParams {
