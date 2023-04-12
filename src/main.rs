@@ -6,9 +6,9 @@ use std::{fs::File, io, path::PathBuf};
 use anyhow::{Context, Result};
 use clap::Parser;
 use sequoia_openpgp::{
-    cert::prelude::{PrimaryKeyAmalgamation, SubordinateKeyAmalgamation},
+    cert::{prelude::ValidKeyAmalgamation, ValidCert},
     crypto::mpi::{PublicKey, MPI},
-    packet::key::PublicParts,
+    packet::key::{PrimaryRole, PublicParts, SubordinateRole},
     parse::Parse,
     policy::StandardPolicy,
     types::RevocationKey,
@@ -126,10 +126,12 @@ struct DumpableKey {
     parameters: DumpableKeyParams,
     fingerprint: String,
     keyid: String,
+    alive: bool,
 }
 
-impl From<PrimaryKeyAmalgamation<'_, PublicParts>> for DumpableKey {
-    fn from(key: PrimaryKeyAmalgamation<'_, PublicParts>) -> Self {
+impl From<ValidKeyAmalgamation<'_, PublicParts, PrimaryRole, ()>> for DumpableKey {
+    fn from(key: ValidKeyAmalgamation<'_, PublicParts, PrimaryRole, ()>) -> Self {
+        let alive = key.alive().is_ok();
         let key = key.key();
 
         Self {
@@ -137,12 +139,14 @@ impl From<PrimaryKeyAmalgamation<'_, PublicParts>> for DumpableKey {
             parameters: key.mpis().into(),
             fingerprint: key.fingerprint().to_hex(),
             keyid: key.keyid().to_hex(),
+            alive,
         }
     }
 }
 
-impl From<SubordinateKeyAmalgamation<'_, PublicParts>> for DumpableKey {
-    fn from(key: SubordinateKeyAmalgamation<'_, PublicParts>) -> Self {
+impl From<ValidKeyAmalgamation<'_, PublicParts, SubordinateRole, ()>> for DumpableKey {
+    fn from(key: ValidKeyAmalgamation<'_, PublicParts, SubordinateRole, ()>) -> Self {
+        let alive = key.alive().is_ok();
         let key = key.key();
 
         Self {
@@ -150,6 +154,7 @@ impl From<SubordinateKeyAmalgamation<'_, PublicParts>> for DumpableKey {
             parameters: key.mpis().into(),
             fingerprint: key.fingerprint().to_hex(),
             keyid: key.keyid().to_hex(),
+            alive,
         }
     }
 }
@@ -178,10 +183,11 @@ struct DumpableCert {
     primary_key: DumpableKey,
     subkeys: Vec<DumpableKey>,
     revocation_keys: Vec<DumpableRevocationKey>,
+    alive: bool,
 }
 
-impl From<Cert> for DumpableCert {
-    fn from(cert: Cert) -> Self {
+impl From<ValidCert<'_>> for DumpableCert {
+    fn from(cert: ValidCert) -> Self {
         Self {
             armor_headers: cert.armor_headers(),
             fingerprint: cert.fingerprint().to_hex(),
@@ -193,9 +199,10 @@ impl From<Cert> for DumpableCert {
             primary_key: cert.primary_key().into(),
             subkeys: cert.keys().subkeys().map(DumpableKey::from).collect(),
             revocation_keys: cert
-                .revocation_keys(&StandardPolicy::new())
+                .revocation_keys(None)
                 .map(DumpableRevocationKey::from)
                 .collect(),
+            alive: cert.alive().is_ok(),
         }
     }
 }
@@ -210,7 +217,7 @@ fn main() -> Result<()> {
     }
     .with_context(|| "failed to load PGP key from input; not a key message?")?;
 
-    let cert = DumpableCert::from(cert);
+    let cert = DumpableCert::from(cert.with_policy(&StandardPolicy::new(), None)?);
 
     println!("{}", serde_json::to_string_pretty(&cert)?);
 
