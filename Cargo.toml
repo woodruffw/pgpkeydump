@@ -6,7 +6,6 @@ version = "0.1.2"
 edition = "2021"
 
 [package.metadata.release]
-dev-version = false
 publish = false
 push = true
 
