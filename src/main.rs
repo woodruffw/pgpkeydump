@@ -122,12 +122,22 @@ impl From<&PublicKey> for DumpableKeyParams {
 }
 
 #[derive(Serialize)]
+struct KeyPurposes {
+    authentication: bool,
+    certification: bool,
+    signing: bool,
+    storage_encryption: bool,
+    transport_encryption: bool,
+}
+
+#[derive(Serialize)]
 struct DumpableKey {
     algorithm: String,
     parameters: DumpableKeyParams,
     fingerprint: String,
     keyid: String,
     expiration: Option<String>,
+    purposes: KeyPurposes,
 }
 
 impl From<ValidKeyAmalgamation<'_, PublicParts, PrimaryRole, ()>> for DumpableKey {
@@ -135,6 +145,13 @@ impl From<ValidKeyAmalgamation<'_, PublicParts, PrimaryRole, ()>> for DumpableKe
         let expiration = key
             .key_expiration_time()
             .map(|t| DateTime::<Utc>::from(t).to_rfc3339());
+        let purposes = KeyPurposes {
+            authentication: key.for_authentication(),
+            certification: key.for_certification(),
+            signing: key.for_signing(),
+            storage_encryption: key.for_storage_encryption(),
+            transport_encryption: key.for_transport_encryption(),
+        };
         let key = key.key();
 
         Self {
@@ -143,6 +160,7 @@ impl From<ValidKeyAmalgamation<'_, PublicParts, PrimaryRole, ()>> for DumpableKe
             fingerprint: key.fingerprint().to_hex(),
             keyid: key.keyid().to_hex(),
             expiration,
+            purposes,
         }
     }
 }
@@ -152,6 +170,13 @@ impl From<ValidKeyAmalgamation<'_, PublicParts, SubordinateRole, ()>> for Dumpab
         let expiration = key
             .key_expiration_time()
             .map(|t| DateTime::<Utc>::from(t).to_rfc3339());
+        let purposes = KeyPurposes {
+            authentication: key.for_authentication(),
+            certification: key.for_certification(),
+            signing: key.for_signing(),
+            storage_encryption: key.for_storage_encryption(),
+            transport_encryption: key.for_transport_encryption(),
+        };
         let key = key.key();
 
         Self {
@@ -160,6 +185,7 @@ impl From<ValidKeyAmalgamation<'_, PublicParts, SubordinateRole, ()>> for Dumpab
             fingerprint: key.fingerprint().to_hex(),
             keyid: key.keyid().to_hex(),
             expiration,
+            purposes,
         }
     }
 }
