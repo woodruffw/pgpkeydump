@@ -1,5 +1,8 @@
 # pgpkeydump
 
+[![CI](https://github.com/woodruffw/pgpkeydump/actions/workflows/ci.yml/badge.svg)](https://github.com/woodruffw/pgpkeydump/actions/workflows/ci.yml)
+[![Crates.io](https://img.shields.io/crates/v/pgpkeydump)](https://crates.io/crates/pgpkeydump)
+
 A tool for dumping PGP keys as JSON.
 
 ## Installation
