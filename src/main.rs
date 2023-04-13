@@ -4,6 +4,7 @@
 use std::{fs::File, io, path::PathBuf};
 
 use anyhow::{Context, Result};
+use chrono::{DateTime, Utc};
 use clap::Parser;
 use sequoia_openpgp::{
     cert::{prelude::ValidKeyAmalgamation, ValidCert},
@@ -126,12 +127,14 @@ struct DumpableKey {
     parameters: DumpableKeyParams,
     fingerprint: String,
     keyid: String,
-    alive: bool,
+    expiration: Option<String>,
 }
 
 impl From<ValidKeyAmalgamation<'_, PublicParts, PrimaryRole, ()>> for DumpableKey {
     fn from(key: ValidKeyAmalgamation<'_, PublicParts, PrimaryRole, ()>) -> Self {
-        let alive = key.alive().is_ok();
+        let expiration = key
+            .key_expiration_time()
+            .map(|t| DateTime::<Utc>::from(t).to_rfc3339());
         let key = key.key();
 
         Self {
@@ -139,14 +142,16 @@ impl From<ValidKeyAmalgamation<'_, PublicParts, PrimaryRole, ()>> for DumpableKe
             parameters: key.mpis().into(),
             fingerprint: key.fingerprint().to_hex(),
             keyid: key.keyid().to_hex(),
-            alive,
+            expiration,
         }
     }
 }
 
 impl From<ValidKeyAmalgamation<'_, PublicParts, SubordinateRole, ()>> for DumpableKey {
     fn from(key: ValidKeyAmalgamation<'_, PublicParts, SubordinateRole, ()>) -> Self {
-        let alive = key.alive().is_ok();
+        let expiration = key
+            .key_expiration_time()
+            .map(|t| DateTime::<Utc>::from(t).to_rfc3339());
         let key = key.key();
 
         Self {
@@ -154,7 +159,7 @@ impl From<ValidKeyAmalgamation<'_, PublicParts, SubordinateRole, ()>> for Dumpab
             parameters: key.mpis().into(),
             fingerprint: key.fingerprint().to_hex(),
             keyid: key.keyid().to_hex(),
-            alive,
+            expiration,
         }
     }
 }
