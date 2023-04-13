@@ -25,7 +25,7 @@ brew install nettle
 pgpkeydump somekey.asc
 ```
 
-Both ASCII-armored and binary inputs should work. If the filename input
+Both ASCII-armored and binary inputs should work. If the filename argument
 is omitted, standard input is read instead. Output always goes to standard
 output.
 
