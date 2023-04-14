@@ -32,10 +32,8 @@ output.
 ## Example
 
 ```bash
-curl https://keys.openpgp.org/vks/v1/by-fingerprint/46C39716A8F07E98384E28F785AE00C504833B3C \
-  > key.asc
-
-pgpkeydump key.asc
+pgpkeydump \
+  <(curl https://keys.openpgp.org/vks/v1/by-keyid/85AE00C504833B3C)
 ```
 
 Produces:
@@ -65,43 +63,19 @@ Produces:
       }
     },
     "fingerprint": "46C39716A8F07E98384E28F785AE00C504833B3C",
-    "keyid": "85AE00C504833B3C"
-  },
-  "subkeys": [
-    {
-      "algorithm": "RSA",
-      "parameters": {
-        "algorithm": "RSA",
-        "e": {
-          "bitness": 17,
-          "value": "010001"
-        },
-        "n": {
-          "bitness": 4096,
-          "value": "long-value-here"
-        }
-      },
-      "fingerprint": "B1D7372F51A23F640BB1F74F88FCC623BDF47C83",
-      "keyid": "88FCC623BDF47C83"
-    },
-    {
-      "algorithm": "RSA",
-      "parameters": {
-        "algorithm": "RSA",
-        "e": {
-          "bitness": 17,
-          "value": "010001"
-        },
-        "n": {
-          "bitness": 4096,
-          "value": "long-value-here"
-        }
-      },
-      "fingerprint": "90E81A884A66CDCB505B0894600D68320BE45ACC",
-      "keyid": "600D68320BE45ACC"
+    "keyid": "85AE00C504833B3C",
+    "expiration": "2025-05-23T16:56:46+00:00",
+    "purposes": {
+      "authentication": true,
+      "certification": true,
+      "signing": true,
+      "storage_encryption": false,
+      "transport_encryption": false
     }
-  ],
-  "revocation_keys": []
+  },
+  "subkeys": [],
+  "revocation_keys": [],
+  "alive": true
 }
 ```
 
