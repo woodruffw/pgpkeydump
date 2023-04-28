@@ -7,11 +7,10 @@ use anyhow::{Context, Result};
 use chrono::{DateTime, Utc};
 use clap::Parser;
 use sequoia_openpgp::{
-    cert::{prelude::ValidKeyAmalgamation, ValidCert},
+    cert::prelude::KeyAmalgamation,
     crypto::mpi::{PublicKey, MPI},
     packet::key::{PrimaryRole, PublicParts, SubordinateRole},
     parse::Parse,
-    policy::StandardPolicy,
     types::RevocationKey,
     Cert,
 };
@@ -136,22 +135,24 @@ struct DumpableKey {
     parameters: DumpableKeyParams,
     fingerprint: String,
     keyid: String,
-    expiration: Option<String>,
-    purposes: KeyPurposes,
+    // expiration: Option<String>,
+    creation: String,
+    // purposes: KeyPurposes,
 }
 
-impl From<ValidKeyAmalgamation<'_, PublicParts, PrimaryRole, ()>> for DumpableKey {
-    fn from(key: ValidKeyAmalgamation<'_, PublicParts, PrimaryRole, ()>) -> Self {
-        let expiration = key
-            .key_expiration_time()
-            .map(|t| DateTime::<Utc>::from(t).to_rfc3339());
-        let purposes = KeyPurposes {
-            authentication: key.for_authentication(),
-            certification: key.for_certification(),
-            signing: key.for_signing(),
-            storage_encryption: key.for_storage_encryption(),
-            transport_encryption: key.for_transport_encryption(),
-        };
+impl From<KeyAmalgamation<'_, PublicParts, PrimaryRole, ()>> for DumpableKey {
+    fn from(key: KeyAmalgamation<'_, PublicParts, PrimaryRole, ()>) -> Self {
+        // let expiration = key
+        //     .key_expiration_time()
+        //     .map(|t| DateTime::<Utc>::from(t).to_rfc3339());
+        let creation = DateTime::<Utc>::from(key.creation_time()).to_rfc3339();
+        // let purposes = KeyPurposes {
+        //     authentication: key.for_authentication(),
+        //     certification: key.for_certification(),
+        //     signing: key.for_signing(),
+        //     storage_encryption: key.for_storage_encryption(),
+        //     transport_encryption: key.for_transport_encryption(),
+        // };
         let key = key.key();
 
         Self {
@@ -159,24 +160,26 @@ impl From<ValidKeyAmalgamation<'_, PublicParts, PrimaryRole, ()>> for DumpableKe
             parameters: key.mpis().into(),
             fingerprint: key.fingerprint().to_hex(),
             keyid: key.keyid().to_hex(),
-            expiration,
-            purposes,
+            // expiration,
+            creation,
+            // purposes,
         }
     }
 }
 
-impl From<ValidKeyAmalgamation<'_, PublicParts, SubordinateRole, ()>> for DumpableKey {
-    fn from(key: ValidKeyAmalgamation<'_, PublicParts, SubordinateRole, ()>) -> Self {
-        let expiration = key
-            .key_expiration_time()
-            .map(|t| DateTime::<Utc>::from(t).to_rfc3339());
-        let purposes = KeyPurposes {
-            authentication: key.for_authentication(),
-            certification: key.for_certification(),
-            signing: key.for_signing(),
-            storage_encryption: key.for_storage_encryption(),
-            transport_encryption: key.for_transport_encryption(),
-        };
+impl From<KeyAmalgamation<'_, PublicParts, SubordinateRole, ()>> for DumpableKey {
+    fn from(key: KeyAmalgamation<'_, PublicParts, SubordinateRole, ()>) -> Self {
+        // let expiration = key
+        //     .key_expiration_time()
+        //     .map(|t| DateTime::<Utc>::from(t).to_rfc3339());
+        let creation = DateTime::<Utc>::from(key.creation_time()).to_rfc3339();
+        // let purposes = KeyPurposes {
+        //     authentication: key.for_authentication(),
+        //     certification: key.for_certification(),
+        //     signing: key.for_signing(),
+        //     storage_encryption: key.for_storage_encryption(),
+        //     transport_encryption: key.for_transport_encryption(),
+        // };
         let key = key.key();
 
         Self {
@@ -184,8 +187,9 @@ impl From<ValidKeyAmalgamation<'_, PublicParts, SubordinateRole, ()>> for Dumpab
             parameters: key.mpis().into(),
             fingerprint: key.fingerprint().to_hex(),
             keyid: key.keyid().to_hex(),
-            expiration,
-            purposes,
+            // expiration,
+            creation,
+            // purposes,
         }
     }
 }
@@ -213,12 +217,12 @@ struct DumpableCert {
     userids: Vec<String>,
     primary_key: DumpableKey,
     subkeys: Vec<DumpableKey>,
-    revocation_keys: Vec<DumpableRevocationKey>,
-    alive: bool,
+    // revocation_keys: Vec<DumpableRevocationKey>,
+    // alive: bool,
 }
 
-impl From<ValidCert<'_>> for DumpableCert {
-    fn from(cert: ValidCert) -> Self {
+impl From<Cert> for DumpableCert {
+    fn from(cert: Cert) -> Self {
         Self {
             armor_headers: cert.armor_headers(),
             fingerprint: cert.fingerprint().to_hex(),
@@ -229,11 +233,11 @@ impl From<ValidCert<'_>> for DumpableCert {
                 .collect(),
             primary_key: cert.primary_key().into(),
             subkeys: cert.keys().subkeys().map(DumpableKey::from).collect(),
-            revocation_keys: cert
-                .revocation_keys(None)
-                .map(DumpableRevocationKey::from)
-                .collect(),
-            alive: cert.alive().is_ok(),
+            // revocation_keys: cert
+            //     .revocation_keys()
+            //     .map(DumpableRevocationKey::from)
+            //     .collect(),
+            // alive: cert.alive().is_ok(),
         }
     }
 }
@@ -248,7 +252,7 @@ fn main() -> Result<()> {
     }
     .with_context(|| "failed to load PGP key from input; not a key message?")?;
 
-    let cert = DumpableCert::from(cert.with_policy(&StandardPolicy::new(), None)?);
+    let cert = DumpableCert::from(cert);
 
     println!("{}", serde_json::to_string_pretty(&cert)?);
 
