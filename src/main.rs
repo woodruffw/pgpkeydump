@@ -285,6 +285,7 @@ struct DumpableCert {
     userids: Vec<String>,
     primary_key: DumpableKey,
     subkeys: Vec<DumpableKey>,
+    bad_signatures: Vec<DumpableSignature>,
 }
 
 impl From<Cert> for DumpableCert {
@@ -298,7 +299,8 @@ impl From<Cert> for DumpableCert {
                 .map(|uid| String::from_utf8_lossy(uid.value()).into_owned())
                 .collect(),
             primary_key: cert.primary_key().into(),
-            subkeys: cert.keys().subkeys().map(DumpableKey::from).collect(),
+            subkeys: cert.keys().subkeys().map(Into::into).collect(),
+            bad_signatures: cert.bad_signatures().map(Into::into).collect(),
         }
     }
 }
