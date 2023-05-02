@@ -59,3 +59,4 @@ If this tool doesn't do what you want, then the closest alternatives are:
   kinds of reasonable inputs);
 * [`sq packet dump`](https://docs.sequoia-pgp.org/sq/), which is maintained
   but only provides a textual output.
+* `gpg --list-packets` or `gpg --with-colons`: Good luck!
