@@ -36,49 +36,6 @@ pgpkeydump \
   <(curl https://keys.openpgp.org/vks/v1/by-keyid/85AE00C504833B3C)
 ```
 
-Produces:
-
-```json
-{
-  "armor_headers": [
-    "46C3 9716 A8F0 7E98 384E  28F7 85AE 00C5 0483 3B3C",
-    "William Woodruff (yossarian.net) <william@yossarian.net"
-  ],
-  "fingerprint": "46C39716A8F07E98384E28F785AE00C504833B3C",
-  "keyid": "85AE00C504833B3C",
-  "userids": [
-    "William Woodruff (yossarian.net) <william@yossarian.net>"
-  ],
-  "primary_key": {
-    "algorithm": "RSA",
-    "parameters": {
-      "algorithm": "RSA",
-      "e": {
-        "bitness": 17,
-        "value": "010001"
-      },
-      "n": {
-        "bitness": 4096,
-        "value": "long-value-here"
-      }
-    },
-    "fingerprint": "46C39716A8F07E98384E28F785AE00C504833B3C",
-    "keyid": "85AE00C504833B3C",
-    "expiration": "2025-05-23T16:56:46+00:00",
-    "purposes": {
-      "authentication": true,
-      "certification": true,
-      "signing": true,
-      "storage_encryption": false,
-      "transport_encryption": false
-    }
-  },
-  "subkeys": [],
-  "revocation_keys": [],
-  "alive": true
-}
-```
-
 ## Why?
 
 PGP is a
