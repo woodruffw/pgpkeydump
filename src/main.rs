@@ -287,7 +287,8 @@ struct DumpableCert {
     primary_key: DumpableKey,
     subkeys: Vec<DumpableKey>,
     bad_signatures: Vec<DumpableSignature>,
-    binding_signature: bool,
+    binding_signature_at_creation: bool,
+    binding_signature_now: bool,
 }
 
 impl From<Cert> for DumpableCert {
@@ -303,7 +304,10 @@ impl From<Cert> for DumpableCert {
             primary_key: cert.primary_key().into(),
             subkeys: cert.keys().subkeys().map(Into::into).collect(),
             bad_signatures: cert.bad_signatures().map(Into::into).collect(),
-            binding_signature: cert.with_policy(&NullPolicy::new(), None).is_err(),
+            binding_signature_at_creation: cert
+                .with_policy(&NullPolicy::new(), cert.primary_key().creation_time())
+                .is_err(),
+            binding_signature_now: cert.with_policy(&NullPolicy::new(), None).is_err(),
         }
     }
 }
