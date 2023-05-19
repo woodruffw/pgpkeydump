@@ -2,7 +2,7 @@
 name = "pgpkeydump"
 description = "A tool for dumping PGP keys as JSON"
 license = "Apache-2.0"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 
 [package.metadata.release]
