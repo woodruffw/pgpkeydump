@@ -14,6 +14,7 @@ use sequoia_openpgp::{
         Signature,
     },
     parse::Parse,
+    policy::NullPolicy,
     types::KeyFlags,
     Cert,
 };
@@ -286,6 +287,7 @@ struct DumpableCert {
     primary_key: DumpableKey,
     subkeys: Vec<DumpableKey>,
     bad_signatures: Vec<DumpableSignature>,
+    binding_signature: bool,
 }
 
 impl From<Cert> for DumpableCert {
@@ -301,6 +303,7 @@ impl From<Cert> for DumpableCert {
             primary_key: cert.primary_key().into(),
             subkeys: cert.keys().subkeys().map(Into::into).collect(),
             bad_signatures: cert.bad_signatures().map(Into::into).collect(),
+            binding_signature: cert.with_policy(&NullPolicy::new(), None).is_err(),
         }
     }
 }
