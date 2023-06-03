@@ -19,7 +19,7 @@ If the build fails, then you might need `nettle`. For macOS:
 brew install nettle
 ```
 
-It is available on the Arch User Repository as [`pgpkeydump`](https://aur.archlinux.org/packages/pgpkeydump).
+`pgpkeydump` is also available on the Arch User Repository as [`pgpkeydump`](https://aur.archlinux.org/packages/pgpkeydump).
 
 ## Usage
 
