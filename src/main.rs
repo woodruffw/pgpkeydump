@@ -14,7 +14,7 @@ use sequoia_openpgp::{
         Signature,
     },
     parse::Parse,
-    policy::NullPolicy,
+    policy::StandardPolicy,
     types::KeyFlags,
     Cert,
 };
@@ -247,13 +247,13 @@ struct DumpableKey {
 impl From<KeyAmalgamation<'_, PublicParts, PrimaryRole, ()>> for DumpableKey {
     fn from(key: KeyAmalgamation<'_, PublicParts, PrimaryRole, ()>) -> Self {
         Self {
-            algorithm: key.pk_algo().to_string(),
-            parameters: key.mpis().into(),
-            fingerprint: key.fingerprint().to_hex(),
-            keyid: key.keyid().to_hex(),
-            creation: DateTime::<Utc>::from(key.creation_time()).to_rfc3339(),
+            algorithm: key.key().pk_algo().to_string(),
+            parameters: key.key().mpis().into(),
+            fingerprint: key.key().fingerprint().to_hex(),
+            keyid: key.key().keyid().to_hex(),
+            creation: DateTime::<Utc>::from(key.key().creation_time()).to_rfc3339(),
             self_signatures: key.self_signatures().map(Into::into).collect(),
-            attestations: key.attestations().map(Into::into).collect(),
+            attestations: key.bundle().approvals().map(Into::into).collect(),
             certifications: key.certifications().map(Into::into).collect(),
             self_revocations: key.self_revocations().map(Into::into).collect(),
             other_revocations: key.other_revocations().map(Into::into).collect(),
@@ -264,13 +264,13 @@ impl From<KeyAmalgamation<'_, PublicParts, PrimaryRole, ()>> for DumpableKey {
 impl From<KeyAmalgamation<'_, PublicParts, SubordinateRole, ()>> for DumpableKey {
     fn from(key: KeyAmalgamation<'_, PublicParts, SubordinateRole, ()>) -> Self {
         Self {
-            algorithm: key.pk_algo().to_string(),
-            parameters: key.mpis().into(),
-            fingerprint: key.fingerprint().to_hex(),
-            keyid: key.keyid().to_hex(),
-            creation: DateTime::<Utc>::from(key.creation_time()).to_rfc3339(),
+            algorithm: key.key().pk_algo().to_string(),
+            parameters: key.key().mpis().into(),
+            fingerprint: key.key().fingerprint().to_hex(),
+            keyid: key.key().keyid().to_hex(),
+            creation: DateTime::<Utc>::from(key.key().creation_time()).to_rfc3339(),
             self_signatures: key.self_signatures().map(Into::into).collect(),
-            attestations: key.attestations().map(Into::into).collect(),
+            attestations: key.bundle().approvals().map(Into::into).collect(),
             certifications: key.certifications().map(Into::into).collect(),
             self_revocations: key.self_revocations().map(Into::into).collect(),
             other_revocations: key.other_revocations().map(Into::into).collect(),
@@ -293,21 +293,22 @@ struct DumpableCert {
 
 impl From<Cert> for DumpableCert {
     fn from(cert: Cert) -> Self {
+        let policy = StandardPolicy::new();
         Self {
             armor_headers: cert.armor_headers(),
             fingerprint: cert.fingerprint().to_hex(),
             keyid: cert.keyid().to_hex(),
             userids: cert
                 .userids()
-                .map(|uid| String::from_utf8_lossy(uid.value()).into_owned())
+                .map(|uid| String::from_utf8_lossy(uid.userid().value()).into_owned())
                 .collect(),
             primary_key: cert.primary_key().into(),
             subkeys: cert.keys().subkeys().map(Into::into).collect(),
             bad_signatures: cert.bad_signatures().map(Into::into).collect(),
             binding_signature_at_creation: cert
-                .with_policy(&NullPolicy::new(), cert.primary_key().creation_time())
+                .with_policy(&policy, cert.primary_key().key().creation_time())
                 .is_err(),
-            binding_signature_now: cert.with_policy(&NullPolicy::new(), None).is_err(),
+            binding_signature_now: cert.with_policy(&policy, None).is_err(),
         }
     }
 }
