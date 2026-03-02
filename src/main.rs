@@ -14,7 +14,7 @@ use sequoia_openpgp::{
         Signature,
     },
     parse::Parse,
-    policy::StandardPolicy,
+    policy::NullPolicy,
     types::KeyFlags,
     Cert,
 };
@@ -293,7 +293,7 @@ struct DumpableCert {
 
 impl From<Cert> for DumpableCert {
     fn from(cert: Cert) -> Self {
-        let policy = StandardPolicy::new();
+        let policy = NullPolicy {};
         Self {
             armor_headers: cert.armor_headers(),
             fingerprint: cert.fingerprint().to_hex(),
