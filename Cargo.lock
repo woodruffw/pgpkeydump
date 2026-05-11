@@ -1265,9 +1265,9 @@ checksum = "1792db035ce95be60c3f8853017b3999209281c24e2ba5bc8e59bf97a0c590c1"
 
 [[package]]
 name = "sequoia-openpgp"
-version = "2.2.0"
+version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0620e44a7d514adf7df87b44db235f13b81fed7ddc265adb26f014d42626ac47"
+checksum = "c847f0f148cf238c3aec88d092fd3c4301c21e906829ea9e415ea7531f7ec094"
 dependencies = [
  "anyhow",
  "argon2",
